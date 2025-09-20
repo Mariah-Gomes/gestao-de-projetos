@@ -1,25 +1,39 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"; // importa mongoose para definir schema/modelo
 
-// Schema de transações financeiras
-// - Cada transação pertence a um usuário (userId)
-// - type: 'income' (entrada) ou 'expense' (saída)
-// - amount: valor >= 0
-// - date: data da transação
-// - description/category: metadados úteis
-const transactionSchema = new mongoose.Schema(
+const transactionSchema = new mongoose.Schema( // cria o schema de transação
   {
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true },
-    type: { type: String, enum: ["income", "expense"], required: true },
-    amount: { type: Number, required: true, min: 0 },
-    date: { type: Date, required: true },
-    description: { type: String, default: "" },
-    category: { type: String, default: "General" }
+    userId: {                                // id do usuário dono da transação
+      type: mongoose.Schema.Types.ObjectId,  // referência p/ outro documento (User)
+      ref: "User",                           // referencia o model "User"
+      required: true,                        // obrigatório
+      index: true                            // índice p/ busca rápida por usuário
+    },
+    type: {                                  // tipo da transação
+      type: String,                          // texto
+      enum: ["income", "expense"],           // só aceita "income" ou "expense"
+      required: true                         // obrigatório
+    },
+    amount: {                                // valor da transação
+      type: Number,                          // número
+      required: true,                        // obrigatório
+      min: 0                                 // não pode ser negativo
+    },
+    date: {                                  // data da transação
+      type: Date,                            // tipo data
+      required: true                         // obrigatório
+    },
+    description: {                           // descrição opcional
+      type: String,
+      default: ""                            // padrão: vazio
+    },
+    category: {                              // categoria opcional
+      type: String,
+      default: "General"                     // padrão: "General"
+    }
   },
   {
-    // createdAt / updatedAt automáticos
-    timestamps: true
+    timestamps: true                         // adiciona createdAt e updatedAt automáticos
   }
 );
 
-// Exporta como "Transaction" -> coleção "transactions"
-export default mongoose.model("Transaction", transactionSchema);
+export default mongoose.model("Transaction", transactionSchema); // exporta model "Transaction" (coleção "transactions")

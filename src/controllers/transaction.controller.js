@@ -1,18 +1,16 @@
-import { validationResult } from "express-validator";
-import Transaction from "../models/Transaction.js";
+import { validationResult } from "express-validator"; // validação dos dados recebidos
+import Transaction from "../models/Transaction.js";   // model de transações no MongoDB
 
-// Criar uma nova transação
-export async function createTransaction(req, res, next) {
+export async function createTransaction(req, res, next) { // cria nova transação
   try {
-    // valida os dados da requisição
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+    const errors = validationResult(req);            // valida inputs
+    if (!errors.isEmpty())                           // se inválido, retorna 400
+      return res.status(400).json({ errors: errors.array() });
 
-    const { type, amount, date, description, category } = req.body;
+    const { type, amount, date, description, category } = req.body; // pega dados do body
 
-    // cria no banco vinculando ao usuário logado (req.userId vem do middleware auth)
-    const tx = await Transaction.create({
-      userId: req.userId,
+    const tx = await Transaction.create({            // salva transação vinculada ao usuário logado
+      userId: req.userId,                            // vem do auth middleware
       type,
       amount,
       date,
@@ -20,65 +18,61 @@ export async function createTransaction(req, res, next) {
       category,
     });
 
-    res.status(201).json(tx);
+    res.status(201).json(tx);                        // retorna transação criada
   } catch (err) {
-    next(err);
+    next(err);                                       // manda erro pro errorMiddleware
   }
 }
 
-// Listar todas as transações do usuário (com filtros opcionais)
-export async function getTransactions(req, res, next) {
+export async function getTransactions(req, res, next) { // lista transações do usuário
   try {
-    const { type, startDate, endDate } = req.query;
+    const { type, startDate, endDate } = req.query;  // filtros opcionais por query
+    const query = { userId: req.userId };            // só busca do usuário logado
 
-    const query = { userId: req.userId };
+    if (type) query.type = type;                     // filtra por tipo
 
-    // filtro por tipo (income/expense)
-    if (type) query.type = type;
-
-    // filtro por intervalo de datas
-    if (startDate || endDate) {
+    if (startDate || endDate) {                      // filtra por intervalo de datas
       query.date = {};
       if (startDate) query.date.$gte = new Date(startDate);
       if (endDate) query.date.$lte = new Date(endDate);
     }
 
-    const txs = await Transaction.find(query).sort({ date: -1 });
-    res.json(txs);
+    const txs = await Transaction.find(query).sort({ date: -1 }); // busca ordenado por data desc
+    res.json(txs);                                   // retorna lista
   } catch (err) {
     next(err);
   }
 }
 
-// Atualizar uma transação (apenas do usuário dono)
-export async function updateTransaction(req, res, next) {
+export async function updateTransaction(req, res, next) { // atualiza transação
   try {
-    const { id } = req.params;
+    const { id } = req.params;                       // pega id da URL
 
-    // busca transação e garante que pertence ao usuário logado
-    const tx = await Transaction.findOneAndUpdate(
-      { _id: id, userId: req.userId },
-      req.body,
-      { new: true, runValidators: true } // retorna atualizado e aplica validações
+    const tx = await Transaction.findOneAndUpdate(   // procura e atualiza
+      { _id: id, userId: req.userId },               // garante que é do usuário logado
+      req.body,                                      // aplica mudanças recebidas
+      { new: true, runValidators: true }             // retorna atualizado + valida
     );
 
     if (!tx) return res.status(404).json({ message: "Transação não encontrada" });
 
-    res.json(tx);
+    res.json(tx);                                    // retorna atualizado
   } catch (err) {
     next(err);
   }
 }
 
-// Deletar uma transação (apenas do usuário dono)
-export async function deleteTransaction(req, res, next) {
+export async function deleteTransaction(req, res, next) { // deleta transação
   try {
-    const { id } = req.params;
+    const { id } = req.params;                       // pega id da URL
 
-    const tx = await Transaction.findOneAndDelete({ _id: id, userId: req.userId });
+    const tx = await Transaction.findOneAndDelete({  // procura e remove
+      _id: id, 
+      userId: req.userId
+    });
     if (!tx) return res.status(404).json({ message: "Transação não encontrada" });
 
-    res.json({ message: "Transação removida com sucesso" });
+    res.json({ message: "Transação removida com sucesso" }); // confirma remoção
   } catch (err) {
     next(err);
   }

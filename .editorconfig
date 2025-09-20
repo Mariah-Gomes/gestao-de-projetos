@@ -1,8 +1,8 @@
- root = true
-[*]
-charset = utf-8
-end_of_line = lf
-indent_style = space
-indent_size = 2
-insert_final_newline = true
-trim_trailing_whitespace = true
+root = true                     # esse é o arquivo principal
+[*]                             # regras valem pra todos os arquivos
+charset = utf-8                 # usar acentos/emoji sem bug
+end_of_line = lf                # quebra de linha estilo Linux/Mac
+indent_style = space            # usa espaço na indentação
+indent_size = 2                 # cada nível = 2 espaços
+insert_final_newline = true     # sempre termina com linha em branco
+trim_trailing_whitespace = true # limpa espaços inúteis no fim da linha

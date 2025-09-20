@@ -1,29 +1,26 @@
-import { Router } from "express";
-import { body } from "express-validator";
-import { register, login } from "../controllers/auth.controller.js";
+import { Router } from "express";                     // cria roteador do Express
+import { body } from "express-validator";             // valida inputs do body
+import { register, login } from "../controllers/auth.controller.js"; // controllers de auth
 
-const router = Router();
+const router = Router();                              // inicializa roteador
 
-// Rota de registro
-router.post(
+router.post(                                          // rota POST /auth/register
   "/register",
   [
-    // validações simples do corpo da requisição
-    body("name").isString().isLength({ min: 2 }),
-    body("email").isEmail(),
-    body("password").isLength({ min: 6 }),
+    body("name").isString().isLength({ min: 2 }),     // name precisa ser string, min 2 chars
+    body("email").isEmail(),                          // email válido
+    body("password").isLength({ min: 6 }),            // senha min 6 chars
   ],
-  register
+  register                                            // chama controller register
 );
 
-// Rota de login
-router.post(
+router.post(                                          // rota POST /auth/login
   "/login",
   [
-    body("email").isEmail(),
-    body("password").isString().notEmpty(),
+    body("email").isEmail(),                          // email válido
+    body("password").isString().notEmpty(),           // senha string e não vazia
   ],
-  login
+  login                                               // chama controller login
 );
 
-export default router;
+export default router;                                // exporta rotas p/ app.js
