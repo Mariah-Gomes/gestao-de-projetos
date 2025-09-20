@@ -1,23 +1,16 @@
-import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";                         // lib para criar/verificar tokens JWT
 
-// Middleware de autenticação
-export default function auth(req, res, next) {
-  // Pega o header Authorization
-  const hdr = req.headers.authorization || "";
+export default function auth(req, res, next) {          // middleware de autenticação
+  const hdr = req.headers.authorization || "";          // pega header Authorization (se não vier, fica "")
+  const token = hdr.startsWith("Bearer ") ? hdr.slice(7) : null; // extrai token do formato "Bearer <token>"
 
-  // Espera o formato: "Bearer <token>"
-  const token = hdr.startsWith("Bearer ") ? hdr.slice(7) : null;
-  if (!token) return res.status(401).json({ message: "Token ausente" });
+  if (!token) return res.status(401).json({ message: "Token ausente" }); // sem token → 401
 
   try {
-    // Valida o token com o segredo do .env
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Salva o id do usuário na req, para usar nas rotas
-    req.userId = payload.sub;
-
-    next(); // segue para a rota
+    const payload = jwt.verify(token, process.env.JWT_SECRET); // valida token usando segredo do .env
+    req.userId = payload.sub;                                  // salva id do usuário na req
+    next();                                                    // chama próxima função/rota
   } catch {
-    return res.status(401).json({ message: "Token inválido ou expirado" });
+    return res.status(401).json({ message: "Token inválido ou expirado" }); // token inválido → 401
   }
 }

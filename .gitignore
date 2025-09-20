@@ -1,5 +1,5 @@
-node_modules/
-.env
-npm-debug.log*
-dist
-coverage
+node_modules/    # dependências (pesado, recriável com npm install)
+.env             # variáveis de ambiente secretas
+npm-debug.log*   # logs de erro do npm
+dist             # pasta de build (se usar build/transpile)
+coverage         # relatórios de testes (ex.: jest --coverage)

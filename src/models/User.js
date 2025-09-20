@@ -1,23 +1,32 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"; // importa mongoose para definir schema/modelo
 
-// Definindo o schema (molde) de como será um usuário no banco
-const userSchema = new mongoose.Schema(
+const userSchema = new mongoose.Schema( // cria o schema de usuário
   {
-    // Nome do usuário (obrigatório, mínimo 2 e máximo 60 caracteres)
-    name: { type: String, required: true, minlength: 2, maxlength: 60, trim: true },
+    name: {                             // nome do usuário
+      type: String,                     // tipo texto
+      required: true,                   // obrigatório
+      minlength: 2,                      // mínimo 2 caracteres
+      maxlength: 60,                     // máximo 60 caracteres
+      trim: true                         // remove espaços extras
+    },
 
-    // Email do usuário (obrigatório, único, sempre em minúsculo e sem espaços extras)
-    email: { type: String, required: true, unique: true, lowercase: true, index: true, trim: true },
+    email: {                            // email do usuário
+      type: String,                     // tipo texto
+      required: true,                   // obrigatório
+      unique: true,                     // não pode repetir no banco
+      lowercase: true,                  // salva sempre em minúsculo
+      index: true,                      // cria índice para buscas rápidas
+      trim: true                        // remove espaços extras
+    },
 
-    // Hash da senha (armazenamos a senha criptografada, nunca a senha pura)
-    passwordHash: { type: String, required: true }
+    passwordHash: {                     // senha criptografada
+      type: String,                     // tipo texto
+      required: true                    // obrigatório
+    }
   },
   {
-    // createdAt: quando o documento foi criado
-    // updatedAt: quando o documento foi atualizado pela última vez
-    timestamps: true
+    timestamps: true                    // adiciona createdAt e updatedAt automaticamente
   }
 );
 
-// Exporta o model "User", que vira a coleção "users" no Mongo
-export default mongoose.model("User", userSchema);
+export default mongoose.model("User", userSchema); // exporta o model "User" (coleção "users")

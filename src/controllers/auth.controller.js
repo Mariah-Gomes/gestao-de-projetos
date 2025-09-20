@@ -1,70 +1,70 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { validationResult } from "express-validator";
-import User from "../models/User.js";
+import bcrypt from "bcrypt";                        // lib para gerar/verificar hash de senha
+import jwt from "jsonwebtoken";                     // lib para gerar/verificar tokens JWT
+import { validationResult } from "express-validator"; // validação dos dados recebidos
+import User from "../models/User.js";               // model do usuário no MongoDB
 
-// função auxiliar para criar um token JWT
-function signToken(userId) {
-  return jwt.sign({ sub: userId }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES || "1d", // expiração (default 1 dia)
-  });
+function signToken(userId) {                        // função auxiliar para criar JWT
+  return jwt.sign(                                  // gera token
+    { sub: userId },                                // payload → id do usuário
+    process.env.JWT_SECRET,                         // segredo do .env
+    { expiresIn: process.env.JWT_EXPIRES || "1d" }  // expiração (default 1 dia)
+  );
 }
 
-// controlador de registro de usuário
-export async function register(req, res, next) {
+export async function register(req, res, next) {    // controlador de registro
   try {
-    // valida os dados da requisição (vem do express-validator)
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+    const errors = validationResult(req);           // checa validação da rota
+    if (!errors.isEmpty())                          // se houver erros de input
+      return res.status(400).json({ errors: errors.array() });
 
-    const { name, email, password } = req.body;
+    const { name, email, password } = req.body;     // pega dados do body
 
-    // checa se já existe usuário com esse email
-    const exists = await User.findOne({ email });
+    const exists = await User.findOne({ email });   // verifica se email já existe
     if (exists) return res.status(409).json({ message: "Email já cadastrado" });
 
-    // gera hash da senha antes de salvar no banco
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = await bcrypt.hash(password, 10); // gera hash da senha (salt=10)
 
-    // cria o usuário no MongoDB
-    const user = await User.create({ name, email, passwordHash });
+    const user = await User.create({                // cria usuário no banco
+      name, 
+      email, 
+      passwordHash 
+    });
 
-    // gera token JWT para o novo usuário
-    const token = signToken(user._id);
+    const token = signToken(user._id);              // gera token JWT
 
-    // retorna o token + dados do usuário (sem a senha)
-    res.status(201).json({ token, user: { id: user._id, name: user.name, email: user.email } });
+    res.status(201).json({                          // retorna token + dados (sem senha)
+      token, 
+      user: { id: user._id, name: user.name, email: user.email }
+    });
   } catch (err) {
-    // se der erro de índice único (concorrência rara)
-    if (err?.code === 11000) {
+    if (err?.code === 11000) {                      // erro de índice único (email duplicado)
       return res.status(409).json({ message: "Email já cadastrado" });
     }
-    next(err);
+    next(err);                                      // manda pro errorMiddleware
   }
 }
 
-// controlador de login de usuário
-export async function login(req, res, next) {
+export async function login(req, res, next) {       // controlador de login
   try {
-    // valida os dados de entrada
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+    const errors = validationResult(req);           // checa validação da rota
+    if (!errors.isEmpty())                          // se input inválido
+      return res.status(400).json({ errors: errors.array() });
 
-    const { email, password } = req.body;
+    const { email, password } = req.body;           // pega dados do body
 
-    // procura o usuário no banco
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email });     // procura usuário no banco
     if (!user) return res.status(401).json({ message: "Credenciais inválidas" });
 
-    // compara senha recebida com o hash salvo
-    const ok = await bcrypt.compare(password, user.passwordHash);
+    const ok = await bcrypt.compare(password, user.passwordHash); // compara senha x hash
     if (!ok) return res.status(401).json({ message: "Credenciais inválidas" });
 
-    // gera token se estiver tudo certo
-    const token = signToken(user._id);
+    const token = signToken(user._id);              // gera novo token JWT
 
-    res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
+    res.json({                                      // retorna token + dados
+      token, 
+      user: { id: user._id, name: user.name, email: user.email }
+    });
   } catch (err) {
-    next(err);
+    next(err);                                      // manda erro pro errorMiddleware
   }
 }

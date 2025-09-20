@@ -1,1 +1,6 @@
- { "semi": true, "singleQuote": false, "printWidth": 100, "trailingComma": "ex5" }
+{
+  "semi": true,
+  "singleQuote": false,
+  "printWidth": 100,
+  "trailingComma": "es5"
+}
