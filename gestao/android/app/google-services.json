@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "449046493777",
+    "project_id": "gestao-software-e052f",
+    "storage_bucket": "gestao-software-e052f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:449046493777:android:f50f8373c2bf1e0238d670",
+        "android_client_info": {
+          "package_name": "com.example.gestao"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4irtI4yEC0Z2wIo7eL6Y2uxul1YSixXU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
