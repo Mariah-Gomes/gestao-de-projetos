@@ -14,22 +14,30 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   DateTime selectedMonth = DateTime.now();
 
-  /// Função chamada pelo RefreshIndicator
   Future<void> _refresh() async {
-    // Força um rebuild (mesmo que snapshots já atualize sozinho)
-    setState(() {});
-    await Future.delayed(const Duration(milliseconds: 300)); // só para dar tempo de animar
+    setState(() {}); // força rebuild do StreamBuilder
+    await Future.delayed(const Duration(milliseconds: 300));
   }
 
   @override
   Widget build(BuildContext context) {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      // não logado, redirecionar
+      Future.microtask(() => Navigator.pushReplacementNamed(context, '/welcome'));
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
-    // define início e fim do mês selecionado
+    final userId = user.uid;
+
+    // início e fim do mês selecionado
     final firstDayOfMonth = DateTime(selectedMonth.year, selectedMonth.month, 1);
-    final lastDayOfMonth =
-    DateTime(selectedMonth.year, selectedMonth.month + 1, 0);
+    // último dia do mês
+    final lastDayOfMonth = DateTime(selectedMonth.year, selectedMonth.month + 1, 0);
 
+    // IMPORTANTE: campo 'date' precisa ser Timestamp no Firestore
     final transactionsQuery = FirebaseFirestore.instance
         .collection('transactions')
         .where('userId', isEqualTo: userId)
@@ -41,7 +49,8 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
-            'Minhas Finanças - ${DateFormat('MM/yyyy').format(selectedMonth)}'),
+          'Minhas Finanças - ${DateFormat('MM/yyyy').format(selectedMonth)}',
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.calendar_month),
@@ -65,9 +74,11 @@ class _HomePageState extends State<HomePage> {
             icon: const Icon(Icons.logout),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
-              Navigator.pushReplacementNamed(context, '/welcome');
+              if (mounted) {
+                Navigator.pushReplacementNamed(context, '/welcome');
+              }
             },
-          )
+          ),
         ],
       ),
       body: RefreshIndicator(
@@ -79,10 +90,20 @@ class _HomePageState extends State<HomePage> {
               return const Center(child: CircularProgressIndicator());
             }
 
+            if (snapshot.hasError) {
+              return Center(
+                child: Text('Erro: ${snapshot.error}'),
+              );
+            }
+
             final docs = snapshot.data?.docs ?? [];
 
+            // Debug: imprime no console
+            for (var d in docs) {
+              debugPrint('doc: ${d.id} => ${d.data()}');
+            }
+
             if (docs.isEmpty) {
-              // physics sempre para poder puxar mesmo sem itens
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 children: const [
@@ -97,7 +118,7 @@ class _HomePageState extends State<HomePage> {
               itemCount: docs.length,
               itemBuilder: (context, index) {
                 final data = docs[index].data() as Map<String, dynamic>;
-                final amount = data['amount'] ?? 0;
+                final amount = (data['amount'] ?? 0).toDouble();
                 final type = data['type'] ?? 'income';
                 final description = data['description'] ?? '';
                 final date = (data['date'] as Timestamp).toDate();
@@ -119,7 +140,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   onTap: () {
-                    // abrir tela de edição
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -138,7 +158,6 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // abrir tela de adição
           Navigator.push(
             context,
             MaterialPageRoute(
