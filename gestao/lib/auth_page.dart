@@ -25,9 +25,9 @@ class _AuthPageState extends State<AuthPage> {
       // Se sucesso -> vai para tela home
       Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao fazer login: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao fazer login: $e')));
     }
   }
 
@@ -39,9 +39,9 @@ class _AuthPageState extends State<AuthPage> {
       );
       Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao registrar: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao registrar: $e')));
     }
   }
 
@@ -73,7 +73,7 @@ class _AuthPageState extends State<AuthPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  isLogin ? 'Log In' : 'Create an Account',
+                  isLogin ? 'Log In' : 'Criar uma conta',
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -82,8 +82,8 @@ class _AuthPageState extends State<AuthPage> {
                 const SizedBox(height: 8),
                 Text(
                   isLogin
-                      ? 'Access your finance account'
-                      : 'Register to manage your finances',
+                      ? 'Acesse sua conta financeira'
+                      : 'Registre para manusear suas finanças',
                   style: TextStyle(color: Colors.grey[700]),
                 ),
                 const SizedBox(height: 24),
@@ -102,7 +102,7 @@ class _AuthPageState extends State<AuthPage> {
                   controller: passwordController,
                   obscureText: true,
                   decoration: InputDecoration(
-                    labelText: 'Password',
+                    labelText: 'Senha',
                     prefixIcon: const Icon(Icons.lock_outline),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -128,7 +128,7 @@ class _AuthPageState extends State<AuthPage> {
                       }
                     },
                     child: Text(
-                      isLogin ? 'Log In' : 'Sign Up',
+                      isLogin ? 'Log In' : 'Registrar-se',
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
@@ -142,14 +142,14 @@ class _AuthPageState extends State<AuthPage> {
                   },
                   child: Text(
                     isLogin
-                        ? "Don't have an account? Sign Up"
-                        : "Already have an account? Log In",
+                        ? "Não possui uma conta? Registre-se"
+                        : "Já possui uma conta? Faça o Log In",
                     style: TextStyle(
                       color: Colors.blue[700],
                       decoration: TextDecoration.underline,
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),
