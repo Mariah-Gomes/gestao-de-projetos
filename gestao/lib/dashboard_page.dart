@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyDashboard());
-}
-
 class MyDashboard extends StatelessWidget {
   const MyDashboard({super.key});
 
@@ -53,21 +49,21 @@ class SideMenu extends StatelessWidget {
           const Spacer(),
 
           Center(
-            child: ElevatedButton.icon(
-              onPressed: () {
-              },
-              icon: const Icon(Icons.logout), // Ícone padrão de logout do Material
-              label: const Text('Sair'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF005C60),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                textStyle: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                },
+                icon: const Icon(Icons.logout), // Ícone padrão de logout do Material
+                label: const Text('Sair'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF005C60),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  textStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-            )
+              )
           ),
         ],
       ),
