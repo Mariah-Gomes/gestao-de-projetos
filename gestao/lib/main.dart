@@ -3,6 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 
+
+import 'dashboard_page.dart';
 import 'welcome_page.dart';
 import 'home_page.dart';
 
@@ -30,7 +32,8 @@ class MyApp extends StatelessWidget {
         '/': (context) =>
             const AuthGate(), // wrapper que decide entre login e home
         '/welcome': (context) => const WelcomePage(),
-        '/home': (context) => const HomePage(),
+        //'/home': (context) => const HomePage(),
+        '/home': (context) => const DashboardPage(),
       },
     );
   }
@@ -49,10 +52,15 @@ class AuthGate extends StatelessWidget {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
-        } else if (snapshot.hasData) {
+        } //else if (snapshot.hasData) {
           // usuário logado → manda para HomePage
-          return const HomePage();
-        } else {
+         // return const HomePage();
+        //} 
+        else if (snapshot.hasData) {
+          // usuário logado → manda para o Dashboard
+          return const DashboardPage();
+        }
+        else {
           // não logado → manda para WelcomePage (login/registro)
           return const WelcomePage();
         }
