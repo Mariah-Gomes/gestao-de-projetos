@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'firebase_options.dart';
 
-
+// SUAS PÁGINAS
 import 'dashboard_page.dart';
 import 'welcome_page.dart';
-import 'home_page.dart';
+
+// adicione esses imports conforme os nomes dos seus arquivos:
+import 'history_page.dart';        // contém: class HistoryPage extends StatefulWidget/StatelessWidget
+//import 'movimentacao_page.dart';   // contém: class MovimentacaoPage ...
+//import 'perfil_page.dart';         // contém: class PerfilPage ...
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,20 +31,28 @@ class MyApp extends StatelessWidget {
       title: 'Finance App',
       theme: ThemeData(primarySwatch: Colors.blue),
 
-      // agora usamos rotas nomeadas
+      // usamos rotas nomeadas
       initialRoute: '/',
       routes: {
-        '/': (context) =>
-            const AuthGate(), // wrapper que decide entre login e home
+        '/': (context) => const AuthGate(),          // decide entre login e home
         '/welcome': (context) => const WelcomePage(),
-        //'/home': (context) => const HomePage(),
-        '/home': (context) => const DashboardPage(),
+        '/home': (context) => const DashboardPage(), // sua dashboard (Home)
+
+        // ✅ novas rotas para o menu
+        '/historico': (context) => const HistoryPage(),
+        //'/mov': (context) => const MovimentacaoPage(),
+        //'/perfil': (context) => const PerfilPage(),
       },
+
+      // (opcional) fallback se chamar uma rota inexistente
+      onUnknownRoute: (settings) => MaterialPageRoute(
+        builder: (_) => const DashboardPage(),
+      ),
     );
   }
 }
 
-/// Este widget decide para onde o usuário vai (login ou home)
+/// Decide para onde o usuário vai (login ou home)
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
 
@@ -49,19 +62,12 @@ class AuthGate extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        } //else if (snapshot.hasData) {
-          // usuário logado → manda para HomePage
-         // return const HomePage();
-        //} 
-        else if (snapshot.hasData) {
-          // usuário logado → manda para o Dashboard
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        } else if (snapshot.hasData) {
+          // logado → Dashboard
           return const DashboardPage();
-        }
-        else {
-          // não logado → manda para WelcomePage (login/registro)
+        } else {
+          // não logado → Welcome/Login
           return const WelcomePage();
         }
       },
