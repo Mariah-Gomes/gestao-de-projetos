@@ -60,7 +60,7 @@ class _AddEditTransactionPageState extends State<AddEditTransactionPage> {
           child: ListView(
             children: [
               DropdownButtonFormField<String>(
-                value: type,
+                initialValue: type,
                 items: const [
                   DropdownMenuItem(value: 'income', child: Text('Entrada')),
                   DropdownMenuItem(value: 'expense', child: Text('Saída')),

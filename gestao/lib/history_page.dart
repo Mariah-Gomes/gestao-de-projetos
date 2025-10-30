@@ -1,3 +1,4 @@
+import 'dart:ui' show FontFeature;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -26,9 +27,11 @@ class _HistoryPageState extends State<HistoryPage> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
+    // Apenas acrescentei o orderBy no servidor para vir já por data desc.
     final q = FirebaseFirestore.instance
         .collection('transactions')
-        .where('userId', isEqualTo: user.uid);
+        .where('userId', isEqualTo: user.uid)
+        .orderBy('date', descending: true);
 
     final money = NumberFormat.simpleCurrency(locale: 'pt_BR');
 
@@ -37,7 +40,8 @@ class _HistoryPageState extends State<HistoryPage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.5,
-        title: const Text('Histórico', style: TextStyle(color: _cTeal, fontWeight: FontWeight.w800)),
+        title: const Text('Histórico',
+            style: TextStyle(color: _cTeal, fontWeight: FontWeight.w800)),
         iconTheme: const IconThemeData(color: _cTeal),
       ),
       body: Padding(
@@ -93,7 +97,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 return _sortAscending ? cmp : -cmp;
               });
 
-              // ---------- Tabela ----------
+              // ---------- Tabela (layout igual ao seu) ----------
               return SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: SingleChildScrollView(
@@ -150,7 +154,9 @@ class _HistoryPageState extends State<HistoryPage> {
                             alignment: Alignment.centerRight,
                             child: Text(
                               money.format(amount),
-                              style: const TextStyle(fontFeatures: [FontFeature.tabularFigures()]),
+                              style: const TextStyle(
+                                fontFeatures: [FontFeature.tabularFigures()],
+                              ),
                             ),
                           )),
                         ],
@@ -166,7 +172,7 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 
-  // Cabeçalho com “setinhas” (↑/↓) ao lado do texto
+  // Cabeçalho com “setinhas” (↑/↓) ao lado do texto — igual ao seu
   DataColumn _sortableColumn(String title, int index, {double? min, bool isRight = false}) {
     final isActive = _sortColumnIndex == index;
     final icon = _sortAscending ? Icons.arrow_upward : Icons.arrow_downward;
