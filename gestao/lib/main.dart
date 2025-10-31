@@ -7,11 +7,11 @@ import 'firebase_options.dart';
 // SUAS PÁGINAS
 import 'dashboard_page.dart';
 import 'welcome_page.dart';
+import 'profile_page.dart';
 
 // adicione esses imports conforme os nomes dos seus arquivos:
 import 'history_page.dart';        // contém: class HistoryPage extends StatefulWidget/StatelessWidget
 //import 'movimentacao_page.dart';   // contém: class MovimentacaoPage ...
-//import 'perfil_page.dart';         // contém: class PerfilPage ...
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
         // ✅ novas rotas para o menu
         '/historico': (context) => const HistoryPage(),
         //'/mov': (context) => const MovimentacaoPage(),
-        //'/perfil': (context) => const PerfilPage(),
+        '/perfil': (context) => ProfilePage(),
       },
 
       // (opcional) fallback se chamar uma rota inexistente
